@@ -9,4 +9,191 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.user.formulacreator.load">
 
+    <Button
+        android:layout_width="347dp"
+        android:layout_height="wrap_content"
+        android:text="use"
+        android:id="@+id/form3"
+        android:layout_gravity="right"
+        android:layout_below="@+id/form2"
+        android:layout_alignRight="@+id/form2"
+        android:layout_alignEnd="@+id/form2" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="use"
+        android:id="@+id/form2"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/form1"
+        android:layout_alignRight="@+id/form1"
+        android:layout_alignEnd="@+id/form1" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="use"
+        android:id="@+id/form4"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/form3"
+        android:layout_alignRight="@+id/form3"
+        android:layout_alignEnd="@+id/form3" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="use"
+        android:id="@+id/form8"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/form7"
+        android:layout_alignRight="@+id/form7"
+        android:layout_alignEnd="@+id/form7" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="use"
+        android:id="@+id/form1"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/button17"
+        android:layout_alignRight="@+id/button17"
+        android:layout_alignEnd="@+id/button17" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="use"
+        android:id="@+id/form7"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/form6"
+        android:layout_alignRight="@+id/form6"
+        android:layout_alignEnd="@+id/form6" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="use"
+        android:id="@+id/form6"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/form5"
+        android:layout_alignRight="@+id/form5"
+        android:layout_alignEnd="@+id/form5" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="use"
+        android:id="@+id/form5"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/form4"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/form4"
+        android:layout_alignEnd="@+id/form4" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:id="@+id/button17"
+        android:layout_gravity="right" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Empty"
+        android:id="@+id/txt1"
+        android:layout_above="@+id/form2"
+        android:layout_below="@+id/button17"
+        android:layout_toRightOf="@+id/form2"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Empty"
+        android:id="@+id/txt2"
+        android:layout_above="@+id/form3"
+        android:layout_below="@+id/txt1"
+        android:layout_toRightOf="@+id/form3"
+        android:layout_alignRight="@+id/txt1"
+        android:layout_alignEnd="@+id/txt1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Empty"
+        android:id="@+id/txt3"
+        android:layout_above="@+id/form4"
+        android:layout_below="@+id/txt2"
+        android:layout_toRightOf="@+id/form3"
+        android:layout_alignRight="@+id/txt2"
+        android:layout_alignEnd="@+id/txt2" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Empty"
+        android:id="@+id/txt4"
+        android:layout_above="@+id/form5"
+        android:layout_below="@+id/txt3"
+        android:layout_toRightOf="@+id/form3"
+        android:layout_alignRight="@+id/txt3"
+        android:layout_alignEnd="@+id/txt3" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Empty"
+        android:id="@+id/txt5"
+        android:layout_above="@+id/form6"
+        android:layout_below="@+id/txt4"
+        android:layout_toRightOf="@+id/form4"
+        android:layout_alignRight="@+id/txt4"
+        android:layout_alignEnd="@+id/txt4" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Empty"
+        android:id="@+id/txt6"
+        android:layout_above="@+id/form7"
+        android:layout_below="@+id/txt5"
+        android:layout_toRightOf="@+id/form6"
+        android:layout_alignRight="@+id/txt5"
+        android:layout_alignEnd="@+id/txt5" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Empty"
+        android:id="@+id/txt7"
+        android:layout_above="@+id/form8"
+        android:layout_alignTop="@+id/form7"
+        android:layout_toRightOf="@+id/form8"
+        android:layout_alignRight="@+id/txt6"
+        android:layout_alignEnd="@+id/txt6" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Empty"
+        android:id="@+id/txt8"
+        android:layout_alignBottom="@+id/form8"
+        android:layout_below="@+id/txt7"
+        android:layout_toRightOf="@+id/form8"
+        android:layout_alignRight="@+id/txt7"
+        android:layout_alignEnd="@+id/txt7" />
+
 </RelativeLayout>
