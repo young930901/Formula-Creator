@@ -8,23 +8,36 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    Button button1;
-    Button button2;
-    Button button3;
+    Button createFormulaPg;
+    Button loadPg;
+    Button thisApp;
+
+    FormulaCreate fc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        button1 = (Button)findViewById(R.id.button1);
-        button1.setOnClickListener(this);
-        button2 = (Button)findViewById(R.id.button2);
-        button2.setOnClickListener(this);
-        button3 = (Button)findViewById(R.id.button3);
-        button3.setOnClickListener(this);
+
+
+        createFormulaPg = (Button)findViewById(R.id.button1);
+        createFormulaPg.setOnClickListener(this);
+        loadPg = (Button)findViewById(R.id.button2);
+        loadPg.setOnClickListener(this);
+        thisApp = (Button)findViewById(R.id.button3);
+        thisApp.setOnClickListener(this);
 
     }
+
+
+
 
     private void button1Click()
     {

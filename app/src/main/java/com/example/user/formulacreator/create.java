@@ -1,51 +1,65 @@
 package com.example.user.formulacreator;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+
 public class create extends AppCompatActivity implements View.OnClickListener{
 
     AlertDialog levelDialog;
-    Button button4;
-    Button button5;
-    Button button6;
-    Button button7;
-    Button button8;
-    Button button9;
+    Button operation;
+    Button Variable;
+    Button ETC;
+    Button save;
+    Button call;
+    Button clear;
     TextView txt;
+    Formula formula;
+    FormulaCreate fc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
 
 
+        formula = new Formula();
         txt = (TextView)findViewById(R.id.textView3);
 
-        button4 = (Button)findViewById(R.id.button4);
-        button4.setOnClickListener(this);
-        button5 = (Button)findViewById(R.id.button5);
-        button5.setOnClickListener(this);
-        button6 = (Button)findViewById(R.id.button6);
-        button6.setOnClickListener(this);
-        button7 = (Button)findViewById(R.id.button7);
-        button7.setOnClickListener(this);
-        button8 = (Button)findViewById(R.id.button8);
-        button8.setOnClickListener(this);
-        button9 = (Button)findViewById(R.id.button9);
-        button9.setOnClickListener(this);
+        operation = (Button)findViewById(R.id.operation);
+        operation.setOnClickListener(this);
+        Variable = (Button)findViewById(R.id.variable);
+        Variable.setOnClickListener(this);
+        ETC = (Button)findViewById(R.id.etc);
+        ETC.setOnClickListener(this);
+        save = (Button)findViewById(R.id.save);
+        save.setOnClickListener(this);
+        call = (Button)findViewById(R.id.call);
+        call.setOnClickListener(this);
+        clear = (Button)findViewById(R.id.clear);
+        clear.setOnClickListener(this);
 
 
     }
 
-    private void button4Click()
+    private void openOpeationDialog()
     {
         final String[] items = {" + "," - "," * "," / "};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -59,7 +73,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
 
-
+                formula.add(items[item]);
                 switch (item) {
                     case 0:
                         txt.setText(txt.getText() + items[item]);
@@ -81,7 +95,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         levelDialog = builder.create();
         levelDialog.show();
     }
-    private void button5Click()
+    private void openVariableDialog()
     {
         final String[] items = {" a "," b "," c "," d "};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -93,20 +107,19 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         }).create();
         builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
-
-
+                formula.add(items[item]);
                 switch (item) {
                     case 0:
-                        txt.setText(txt.getText()+items[item]);
+                        txt.setText(txt.getText() + items[item]);
                         break;
                     case 1:
-                        txt.setText(txt.getText()+items[item]);
+                        txt.setText(txt.getText() + items[item]);
                         break;
                     case 2:
-                        txt.setText(txt.getText()+items[item]);
+                        txt.setText(txt.getText() + items[item]);
                         break;
                     case 3:
-                        txt.setText(txt.getText()+items[item]);
+                        txt.setText(txt.getText() + items[item]);
                         break;
 
                 }
@@ -116,45 +129,75 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         levelDialog = builder.create();
         levelDialog.show();
     }
-    private void button7Click()
-    {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("eqn", (String) txt.getText()); //InputString: from the EditText
-        editor.commit();
+    private void save() throws IOException {
 
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Alert");
-        alertDialog.setMessage("Your Eqn is saved. Go to the menu and try it!")
-                .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        create.this.finish();
-                        dialog.cancel();
-                    }
-                }).create();
-        alertDialog.show();
+        fc = new FormulaCreate();
 
+
+        if(fc.getFormula().size()<8)
+        {
+
+            fc.putFormula(formula.getForm());
+            formula.reset();
+
+
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("formulas.txt", Context.MODE_PRIVATE));
+            outputStreamWriter.write(formula.getForm()+"\n");
+            outputStreamWriter.close();
+
+            final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle("Formula Created");
+            alertDialog.setMessage("Your Eqn is saved. Go to the menu and try it!")
+                    .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            create.this.finish();
+                            dialog.cancel();
+                        }
+                    }).create();
+            alertDialog.show();
+        }
+        else
+        {
+            final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle("Fail To Save");
+            alertDialog.setMessage("You can have up to 8 Formulas. Delete in Load Menu!!")
+                    .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            create.this.finish();
+                            dialog.cancel();
+                        }
+                    }).create();
+            alertDialog.show();
+
+        }
     }
-    private void button9Click()
+
+
+    private void clear()
     {
-        txt.setText("");
+        formula.delete();
+        txt.setText(formula.toString());
 
     }
     @Override
     public void onClick(View v) {
         switch(v.getId())
         {
-            case R.id.button4:
-                button4Click();
+            case R.id.operation:
+                openOpeationDialog();
                 break;
-            case R.id.button5:
-                button5Click();
+            case R.id.variable:
+                openVariableDialog();
                 break;
-            case R.id.button7:
-                button7Click();
+            case R.id.save:
+                try {
+                    save();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
-            case R.id.button9:
-                button9Click();
+            case R.id.clear:
+                clear();
                 break;
         }
     }

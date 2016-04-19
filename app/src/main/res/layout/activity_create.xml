@@ -24,28 +24,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Operation"
-            android:id="@+id/button4"
+            android:id="@+id/operation"
             android:layout_gravity="center_vertical" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Variable"
-            android:id="@+id/button5"
+            android:id="@+id/variable"
             android:layout_gravity="center_vertical" />
 
         <Button
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:text="ETC"
-            android:id="@+id/button6"
+            android:id="@+id/etc"
             android:layout_gravity="center_vertical" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Save"
-            android:id="@+id/button7"
+            android:id="@+id/save"
             android:layout_gravity="center_vertical"
             android:layout_alignBottom="@+id/linearLayout"
             android:layout_alignParentRight="true"
@@ -57,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="call exiting"
-        android:id="@+id/button8"
+        android:id="@+id/call"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
@@ -68,7 +68,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Input Your Formula Below"
         android:id="@+id/textView"
-        android:layout_below="@+id/button9"
+        android:layout_below="@+id/clear"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -76,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Clear"
-        android:id="@+id/button9"
+        android:id="@+id/clear"
         android:layout_gravity="center_vertical"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />

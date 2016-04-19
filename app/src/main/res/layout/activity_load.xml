@@ -56,9 +56,9 @@
         android:text="use"
         android:id="@+id/form1"
         android:layout_gravity="center_horizontal"
-        android:layout_below="@+id/button17"
-        android:layout_alignRight="@+id/button17"
-        android:layout_alignEnd="@+id/button17" />
+        android:layout_below="@+id/delete"
+        android:layout_alignRight="@+id/delete"
+        android:layout_alignEnd="@+id/delete" />
 
     <Button
         android:layout_width="match_parent"
@@ -97,7 +97,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Delete"
-        android:id="@+id/button17"
+        android:id="@+id/delete"
         android:layout_gravity="right" />
 
     <TextView
@@ -107,7 +107,7 @@
         android:text="Empty"
         android:id="@+id/txt1"
         android:layout_above="@+id/form2"
-        android:layout_below="@+id/button17"
+        android:layout_below="@+id/delete"
         android:layout_toRightOf="@+id/form2"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
