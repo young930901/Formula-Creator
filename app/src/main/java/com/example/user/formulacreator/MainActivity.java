@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         thisApp = (Button)findViewById(R.id.button3);
         thisApp.setOnClickListener(this);
 
+
+
     }
 
 
@@ -45,7 +47,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     private void button2Click()
     {
-        startActivity(new Intent("com.example.user.formulacreator.load"));
+        Intent i=new Intent(MainActivity.this, listView.class);
+        startActivity(i);
+
     }
     public void button3Click()
     {

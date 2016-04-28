@@ -7,48 +7,30 @@ import java.util.List;
  * Created by user on 4/12/2016.
  */
 public class Formula {
-    public ArrayList<String> exprList= new ArrayList<>();
+    public ArrayList<Token> exprList= new ArrayList<>();
 
-    public void add(String expr)
+    public void add(Token expr)
     {
-        if(exprList.size()==0)
-        {
-            exprList.add(expr);
-        }
-        else
-        {
-            exprList.add(","+expr);
-        }
-
+        exprList.add(expr);
     }
+
     public void reset()
     {
-
     }
     public void delete()
     {
         exprList.remove(exprList.size()-1);
     }
-    public String getForm()
+    public ArrayList<Token> getForm()
     {
-        String formula="";
-        for(String s :exprList)
-        {
-            formula+=s;
-        }
-        return formula;
+        return exprList;
     }
     public String toString()
     {
         String s="";
-        for(String st: exprList)
+        for(int i=0; i<exprList.size();i++)
         {
-            if(st.startsWith(",")==true)
-            {
-                s+=st.substring(1,st.length());
-            }
-            else
-                s+=st;
+            s= s+exprList.get(i).content;
         }
         return s;
     }

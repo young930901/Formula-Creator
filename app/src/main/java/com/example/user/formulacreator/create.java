@@ -32,15 +32,15 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     Button call;
     Button clear;
     TextView txt;
-    Formula formula;
+    Formula formula = new Formula();
     FormulaCreate fc;
+    Token t;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
 
 
-        formula = new Formula();
         txt = (TextView)findViewById(R.id.textView3);
 
         operation = (Button)findViewById(R.id.operation);
@@ -61,7 +61,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
 
     private void openOpeationDialog()
     {
-        final String[] items = {" + "," - "," * "," / "};
+        final String[] items = {"+","-","*","/","(",")","!","P","C","Sum","log"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Operation");
         builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
@@ -73,22 +73,9 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
 
-                formula.add(items[item]);
-                switch (item) {
-                    case 0:
-                        txt.setText(txt.getText() + items[item]);
-                        break;
-                    case 1:
-                        txt.setText(txt.getText() + items[item]);
-                        break;
-                    case 2:
-                        txt.setText(txt.getText() + items[item]);
-                        break;
-                    case 3:
-                        txt.setText(txt.getText() + items[item]);
-                        break;
-
-                }
+                t = new Token(items[item]);
+                formula.add(t);
+                txt.setText(txt.getText() + items[item]);
                 levelDialog.dismiss();
             }
         });
@@ -97,7 +84,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     }
     private void openVariableDialog()
     {
-        final String[] items = {" a "," b "," c "," d "};
+        final String[] items = {" a "," b "," c "," d "," e "," f "," Var "};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Variable");
         builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
@@ -107,22 +94,32 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         }).create();
         builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
-                formula.add(items[item]);
-                switch (item) {
-                    case 0:
-                        txt.setText(txt.getText() + items[item]);
-                        break;
-                    case 1:
-                        txt.setText(txt.getText() + items[item]);
-                        break;
-                    case 2:
-                        txt.setText(txt.getText() + items[item]);
-                        break;
-                    case 3:
-                        txt.setText(txt.getText() + items[item]);
-                        break;
 
-                }
+                t = new Token(items[item]);
+                formula.add(t);
+                txt.setText(txt.getText() + items[item]);
+                levelDialog.dismiss();
+            }
+        });
+        levelDialog = builder.create();
+        levelDialog.show();
+    }
+    private void openETC()
+    {
+        final String[] items = {"sin"," cos", "tan", "cot", "cosec","Pi(3.14)", "e(2.718)"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Variable");
+        builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).create();
+        builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+
+                t = new Token(items[item]);
+                formula.add(t);
+                txt.setText(txt.getText() + items[item]);
                 levelDialog.dismiss();
             }
         });
@@ -134,11 +131,9 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         fc = new FormulaCreate();
 
 
-        if(fc.getFormula().size()<8)
-        {
 
-            fc.putFormula(formula.getForm());
-            formula.reset();
+
+            fc.putFormula(formula);
 
 
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("formulas.txt", Context.MODE_PRIVATE));
@@ -155,21 +150,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
                         }
                     }).create();
             alertDialog.show();
-        }
-        else
-        {
-            final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            alertDialog.setTitle("Fail To Save");
-            alertDialog.setMessage("You can have up to 8 Formulas. Delete in Load Menu!!")
-                    .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            create.this.finish();
-                            dialog.cancel();
-                        }
-                    }).create();
-            alertDialog.show();
 
-        }
     }
 
 
@@ -195,6 +176,9 @@ public class create extends AppCompatActivity implements View.OnClickListener{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                break;
+            case R.id.etc:
+                openETC();
                 break;
             case R.id.clear:
                 clear();

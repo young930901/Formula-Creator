@@ -122,11 +122,11 @@ public class load extends AppCompatActivity implements View.OnClickListener {
     private void loadFormula() {
 
         int i=0;
-        for(String s : fc.getFormula())
-        {
-            txtArray[i].setText(s);
-            i++;
-        }
+//        for(String s : fc.getFormula())
+//        {
+//            txtArray[i].setText(s);
+//            i++;
+//        }
 
         for(int j=fc.getFormula().size();j<8;j++)
         {
@@ -159,11 +159,11 @@ public class load extends AppCompatActivity implements View.OnClickListener {
         fwOb.close();
 
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("formulas.txt", Context.MODE_PRIVATE));
-        for(String s: fc.getFormula())
-        {
-            outputStreamWriter.write(s+"\n");
-            outputStreamWriter.close();
-        }
+//        for(String s: fc.getFormula())
+//        {
+//            outputStreamWriter.write(s+"\n");
+//            outputStreamWriter.close();
+//        }
         loadFormula();
     }
     private void deleteFromFile(int i)
@@ -180,22 +180,22 @@ public class load extends AppCompatActivity implements View.OnClickListener {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String receiveString = "";
 
-            while ( (receiveString = bufferedReader.readLine()) != null ) {
-
-                     fc.putFormula(receiveString);
-                     fc.tekenize(receiveString);
-
-            }
+//            while ( (receiveString = bufferedReader.readLine()) != null ) {
+//
+//                     fc.putFormula(receiveString);
+//                     fc.tekenize(receiveString);
+//
+//            }
             inputStream.close();
         }
 
     }
     private void initializeList()
     {
-        for(String s: fc.getFormula())
-        {
-            fc.getFormula().remove(0);
-        }
+//        for(String s: fc.getFormula())
+//        {
+//            fc.getFormula().remove(0);
+//        }
     }
 
 

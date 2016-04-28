@@ -29,7 +29,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".Calculate"></activity>
+        <activity android:name=".Calculate" />
+        <activity android:name=".listView" />
     </application>
 
 </manifest>
