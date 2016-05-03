@@ -9,18 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+
 
 public class create extends AppCompatActivity implements View.OnClickListener{
 
@@ -61,7 +55,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
 
     private void openOpeationDialog()
     {
-        final String[] items = {"+","-","*","/","(",")","!","P","C","Sum","log"};
+        final String[] items = {"+","-","*","/","(",")","!","P","C","log"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Operation");
         builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
@@ -106,7 +100,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     }
     private void openETC()
     {
-        final String[] items = {"sin"," cos", "tan", "cot", "cosec","Pi(3.14)", "e(2.718)"};
+        final String[] items = {"sin(var)"," cos(var)", "tan(var)","Pi(3.14)", "e(2.718)","var*sin(var)"," var*cos(var)", "var*tan(var)"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Variable");
         builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
@@ -128,18 +122,21 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     }
     private void save() throws IOException {
 
-        fc = new FormulaCreate();
 
 
-
-
+            fc = new FormulaCreate();
             fc.putFormula(formula);
+    try {
+        FileOutputStream out = new FileOutputStream("test.txt");
+        ObjectOutputStream oout = new ObjectOutputStream(out);
+        oout.writeObject(fc);
+        oout.close();
+        out.close();
+    }
+    catch(Exception e)
+    {
 
-
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("formulas.txt", Context.MODE_PRIVATE));
-            outputStreamWriter.write(formula.getForm()+"\n");
-            outputStreamWriter.close();
-
+    }
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("Formula Created");
             alertDialog.setMessage("Your Eqn is saved. Go to the menu and try it!")

@@ -1,12 +1,13 @@
 package com.example.user.formulacreator;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by user on 4/12/2016.
  */
-public class Formula {
+public class Formula implements Serializable{
     public ArrayList<Token> exprList= new ArrayList<>();
 
     public void add(Token expr)

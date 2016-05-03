@@ -9,10 +9,16 @@ import android.view.View;
 import android.widget.Button;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.StreamCorruptedException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -34,8 +40,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         thisApp = (Button)findViewById(R.id.button3);
         thisApp.setOnClickListener(this);
 
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("formulas.bin"));
+            FormulaCreate.formulas = (ArrayList<Formula>) ois.readObject();
 
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

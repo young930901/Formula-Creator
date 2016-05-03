@@ -1,17 +1,17 @@
 package com.example.user.formulacreator;
 
+import java.io.Serializable;
+
 /**
  * Created by user on 4/28/2016.
  */
-public class Token {
+public class Token implements Serializable{
     public static final int UNKNOWN = -1;
     public static final int NUMBER = 0;
     public static final int OPERATOR = 1;
     public static final int LEFT_PARENTHESIS = 2;
     public static final int RIGHT_PARENTHESIS = 3;
     public static final int FIXED_VALUE =4;
-    public static final int TRIG = 5;
-    public static final int FACRORIAL = 6;
 
 
 
@@ -56,23 +56,23 @@ public class Token {
                 type = RIGHT_PARENTHESIS;
                 precedence = 3;
                 break;
-            case "sin":
-                type = TRIG;
+            case "sin(var)":
+                type = OPERATOR;
                 operator = contents;
                 precedence = 3;
                 break;
-            case "cos":
-                type = TRIG;
+            case "cos(var)":
+                type = OPERATOR;
                 operator = contents;
                 precedence = 3;
                 break;
-            case "tan":
-                type = TRIG;
+            case "tan(var)":
+                type = OPERATOR;
                 operator = contents;
                 precedence = 3;
                 break;
             case "!":
-                type = FACRORIAL;
+                type = OPERATOR;
                 operator = contents;
                 precedence = 2;
                 break;
@@ -82,11 +82,6 @@ public class Token {
                 precedence = 2;
                 break;
             case "C":
-                type = OPERATOR;
-                operator = contents;
-                precedence = 2;
-                break;
-            case "Sum":
                 type = OPERATOR;
                 operator = contents;
                 precedence = 2;
@@ -120,6 +115,10 @@ public class Token {
         type = NUMBER;
         value = x;
     }
+    public void putValue(double v)
+    {
+        value = v;
+    }
 
     int getType() { return type; }
     double getValue() { return value; }
@@ -140,6 +139,28 @@ public class Token {
             case "/":
                 result = a / b;
                 break;
+            case "sin(var)":
+                result = Math.sin(a);
+                break;
+            case "cos(var)":
+                result = Math.cos(a);
+                break;
+            case "tan(var)":
+                result = Math.tan(a);
+                break;
+            case "var*sin(var)":
+                result = a*Math.sin(b);
+                break;
+            case "var*cos(var)":
+                result = a*Math.cos(b);
+                break;
+            case "car*tan(var)":
+                result = a*Math.tan(b);
+                break;
+            case "log":
+                result = Math.log(a);
+                break;
+
         }
         return new Token(result);
     }
