@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         thisApp.setOnClickListener(this);
 
         try {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("formulas.bin"));
-            FormulaCreate.formulas = (ArrayList<Formula>) ois.readObject();
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("formulas.txt"));
+            fc.formulas = (ArrayList<Formula>) ois.readObject();
 
         } catch (Exception e) {
             e.printStackTrace();

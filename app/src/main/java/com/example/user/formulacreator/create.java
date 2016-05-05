@@ -78,7 +78,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     }
     private void openVariableDialog()
     {
-        final String[] items = {" a "," b "," c "," d "," e "," f "," Var "};
+        final String[] items = {"a","b","c","d","e","f","Var"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Variable");
         builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
@@ -100,7 +100,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     }
     private void openETC()
     {
-        final String[] items = {"sin(var)"," cos(var)", "tan(var)","Pi(3.14)", "e(2.718)","var*sin(var)"," var*cos(var)", "var*tan(var)"};
+        final String[] items = {"sin(var)"," cos(var)", "tan(var)","Pi(3.14)", "e(2.718)","var*sin(var)","var*cos(var)", "var*tan(var)"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Variable");
         builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
@@ -127,7 +127,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
             fc = new FormulaCreate();
             fc.putFormula(formula);
     try {
-        FileOutputStream out = new FileOutputStream("test.txt");
+        FileOutputStream out = new FileOutputStream("formulas.txt");
         ObjectOutputStream oout = new ObjectOutputStream(out);
         oout.writeObject(fc);
         oout.close();

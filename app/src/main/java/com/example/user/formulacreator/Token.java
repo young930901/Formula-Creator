@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class Token implements Serializable{
     public static final int UNKNOWN = -1;
     public static final int NUMBER = 0;
+    public static final int TRIG_NUMBER = 0;
     public static final int OPERATOR = 1;
     public static final int LEFT_PARENTHESIS = 2;
     public static final int RIGHT_PARENTHESIS = 3;
@@ -57,17 +58,32 @@ public class Token implements Serializable{
                 precedence = 3;
                 break;
             case "sin(var)":
-                type = OPERATOR;
+                type = TRIG_NUMBER;
                 operator = contents;
                 precedence = 3;
                 break;
             case "cos(var)":
-                type = OPERATOR;
+                type = TRIG_NUMBER;
                 operator = contents;
                 precedence = 3;
                 break;
             case "tan(var)":
-                type = OPERATOR;
+                type = TRIG_NUMBER;
+                operator = contents;
+                precedence = 3;
+                break;
+            case "var*sin(var)":
+                type = TRIG_NUMBER;
+                operator = contents;
+                precedence = 3;
+                break;
+            case "var*cos(var)":
+                type = TRIG_NUMBER;
+                operator = contents;
+                precedence = 3;
+                break;
+            case "var*tan(var)":
+                type = TRIG_NUMBER;
                 operator = contents;
                 precedence = 3;
                 break;
@@ -103,11 +119,7 @@ public class Token implements Serializable{
                 break;
             default:
                 type = NUMBER;
-                try {
-                    value = Double.parseDouble(contents);
-                } catch (Exception ex) {
-                    type = UNKNOWN;
-                }
+
         }
     }
 

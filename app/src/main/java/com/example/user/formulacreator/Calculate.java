@@ -18,9 +18,8 @@ import java.util.Stack;
 public class Calculate extends AppCompatActivity implements View.OnClickListener {
     int c;
     TextView formula;
-    TextView askValue;
-    EditText askNum;
-    Button enter;
+    TextView result;
+    Button calculate;
     Formula f;
     FormulaCreate fc;
 
@@ -28,6 +27,10 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     private Stack<Token> valueStack;
     private ArrayList<Token> tokens;
     private boolean error;
+    private boolean work;
+
+    double lastValue =0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +45,11 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
 
 
         formula = (TextView) findViewById(R.id.textView2);
-        askValue = (TextView) findViewById(R.id.textView4);
-        askNum = (EditText) findViewById(R.id.editText);
-
-        enter = (Button) findViewById(R.id.button);
-        enter.setOnClickListener(this);
+        result = (TextView) findViewById(R.id.result);
+        result.setText("0.0");
+        formula.setText(fc.getFormula().get(listView.p).toString());
+        calculate = (Button) findViewById(R.id.button);
+        calculate.setOnClickListener(this);
 
     }
 
@@ -54,6 +57,15 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
+            processInput();
+                if(work==false)
+                {
+                    result.setText("Expression Error");
+                }
+                else
+                {
+                    result.setText(Double.toString(lastValue));
+                }
                 break;
         }
     }
@@ -61,14 +73,14 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     private void processOperator(Token t) {
         Token A = null, B = null;
         if (tokens.size()==0) {
-            System.out.println("Expression error.");
+            result.setText("Expression error.");
             error = true;
             return;
         } else {
             B = valueStack.pop();
         }
         if (valueStack.isEmpty()) {
-            System.out.println("Expression error.");
+            result.setText("Expression error.");
             error = true;
             return;
         } else {
@@ -79,8 +91,6 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     }
 
     public void processInput() {
-
-        // Main loop - process all input tokens
         for (int n = 0; n < tokens.size(); n++) {
             final Token nextToken = tokens.get(n);
             if (nextToken.getType() == Token.NUMBER) {
@@ -125,6 +135,58 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
                     error = true;
                 }
             }
+            else if(nextToken.getType()== Token.TRIG_NUMBER)
+            {
+                if(nextToken.content=="sin(var)")
+                {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                    alert.setTitle("Put value of variable for sin");
+                    final EditText edit = new EditText(this);
+                    edit.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    edit.setRawInputType(Configuration.KEYBOARD_12KEY);
+                    alert.setView(edit);
+                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            nextToken.putValue(Math.sin(Double.parseDouble(edit.getText().toString())));
+                        }
+                    });
+                    alert.show();
+                    valueStack.push(nextToken);
+
+                }
+                else if(nextToken.content=="cos(var)")
+                {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                    alert.setTitle("Put value of variable for cos");
+                    final EditText edit = new EditText(this);
+                    edit.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    edit.setRawInputType(Configuration.KEYBOARD_12KEY);
+                    alert.setView(edit);
+                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            nextToken.putValue(Math.cos(Double.parseDouble(edit.getText().toString())));
+                        }
+                    });
+                    alert.show();
+                    valueStack.push(nextToken);
+                }
+                else if(nextToken.content=="tan(var)")
+                {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                    alert.setTitle("Put value of variable for tan");
+                    final EditText edit = new EditText(this);
+                    edit.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    edit.setRawInputType(Configuration.KEYBOARD_12KEY);
+                    alert.setView(edit);
+                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            nextToken.putValue(Math.tan(Double.parseDouble(edit.getText().toString())));
+                        }
+                    });
+                    alert.show();
+                    valueStack.push(nextToken);
+                }
+            }
 
         }
         // Empty out the operator stack at the end of the input
@@ -138,9 +200,10 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
             Token result = valueStack.peek();
             valueStack.pop();
             if (!operatorStack.isEmpty() || !valueStack.isEmpty()) {
-                System.out.println("Expression error.");
+                work = false;
             } else {
-                System.out.println("The result is " + result.getValue());
+                work = true;
+                lastValue = result. getValue();
             }
         }
     }
