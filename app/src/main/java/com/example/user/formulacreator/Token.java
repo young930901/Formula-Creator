@@ -5,117 +5,87 @@ import java.io.Serializable;
 /**
  * Created by user on 4/28/2016.
  */
-public class Token implements Serializable{
+public class Token {
+    public static final int MINUS = 4;
+    public static final int NUMBER = 9;
+    public static final int PLUS = 3;
+    public static final int RPAREN = 8;
+    public static final int TIMES = 5;
+    public static final int LPAREN = 7;
+    public static final int SIN = 10;
+    public static final int COS = 11;
+    public static final int TAN = 12;
+    public static final int DIVIDE = 13;
+    public static final int PI = 14;
+    public static final int E = 15;
+    public static final int POWER = 16;
     public static final int UNKNOWN = -1;
-    public static final int NUMBER = 0;
-    public static final int TRIG_NUMBER = 0;
-    public static final int OPERATOR = 1;
-    public static final int LEFT_PARENTHESIS = 2;
-    public static final int RIGHT_PARENTHESIS = 3;
-    public static final int FIXED_VALUE =4;
-
-
+    public static final int LOG = 17;
 
 
     private int type;
     private double value;
     public String operator;
-    private int precedence;
     public String content;
-    public Token() {
+
+    public Token()
+    {
         type = UNKNOWN;
     }
-
     public Token(String contents) {
         content = contents;
         switch(contents) {
             case "+":
-                type = OPERATOR;
+                type = PLUS;
                 operator = contents;
-                precedence = 1;
                 break;
             case "-":
-                type = OPERATOR;
+                type = MINUS;
                 operator = contents;
-                precedence = 1;
                 break;
             case "*":
-                type = OPERATOR;
+                type = TIMES;
                 operator = contents;
-                precedence = 2;
                 break;
             case "/":
-                type = OPERATOR;
+                type = DIVIDE;
                 operator = contents;
-                precedence = 2;
                 break;
             case "(":
-                type = LEFT_PARENTHESIS;
-                precedence = 3;
+                type = LPAREN;
                 break;
             case ")":
-                type = RIGHT_PARENTHESIS;
-                precedence = 3;
+                type = RPAREN;
                 break;
-            case "sin(var)":
-                type = TRIG_NUMBER;
+            case "sin":
+                type = SIN;
                 operator = contents;
-                precedence = 3;
                 break;
-            case "cos(var)":
-                type = TRIG_NUMBER;
+            case "cos":
+                type = COS;
                 operator = contents;
-                precedence = 3;
                 break;
-            case "tan(var)":
-                type = TRIG_NUMBER;
+            case "tan":
+                type = TAN;
                 operator = contents;
-                precedence = 3;
-                break;
-            case "var*sin(var)":
-                type = TRIG_NUMBER;
-                operator = contents;
-                precedence = 3;
-                break;
-            case "var*cos(var)":
-                type = TRIG_NUMBER;
-                operator = contents;
-                precedence = 3;
-                break;
-            case "var*tan(var)":
-                type = TRIG_NUMBER;
-                operator = contents;
-                precedence = 3;
-                break;
-            case "!":
-                type = OPERATOR;
-                operator = contents;
-                precedence = 2;
-                break;
-            case "P":
-                type = OPERATOR;
-                operator = contents;
-                precedence = 2;
-                break;
-            case "C":
-                type = OPERATOR;
-                operator = contents;
-                precedence = 2;
-                break;
-            case "log":
-                type = OPERATOR;
-                operator = contents;
-                precedence = 2;
                 break;
             case "Pi":
-                type = FIXED_VALUE;
+                type = PI;
                 content = contents;
                 value = 3.14;
                 break;
             case "e":
-                type = FIXED_VALUE;
+                type = E;
                 content = contents;
                 value = 2.17;
+                break;
+            case "^":
+                type = POWER;
+                content = contents;
+                break;
+            case "log":
+                type = LOG;
+                content = contents;
                 break;
             default:
                 type = NUMBER;
@@ -131,50 +101,15 @@ public class Token implements Serializable{
     {
         value = v;
     }
-
+    public boolean isOp()
+    {
+        if(type==PLUS||type==MINUS||type==TIMES||type==DIVIDE||type==LPAREN||type==RPAREN||type==SIN||type==LOG)
+            return true;
+        return false;
+    }
     int getType() { return type; }
     double getValue() { return value; }
-    int getPrecedence() { return precedence; }
 
-    Token operate(double a,double b) {
-        double result = 0;
-        switch(operator) {
-            case "+":
-                result = a + b;
-                break;
-            case "-":
-                result = a - b;
-                break;
-            case "*":
-                result = a * b;
-                break;
-            case "/":
-                result = a / b;
-                break;
-            case "sin(var)":
-                result = Math.sin(a);
-                break;
-            case "cos(var)":
-                result = Math.cos(a);
-                break;
-            case "tan(var)":
-                result = Math.tan(a);
-                break;
-            case "var*sin(var)":
-                result = a*Math.sin(b);
-                break;
-            case "var*cos(var)":
-                result = a*Math.cos(b);
-                break;
-            case "car*tan(var)":
-                result = a*Math.tan(b);
-                break;
-            case "log":
-                result = Math.log(a);
-                break;
 
-        }
-        return new Token(result);
-    }
 }
 

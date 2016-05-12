@@ -13,23 +13,27 @@ import android.widget.TextView;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
+import java.util.Iterator;
 import java.util.Stack;
 
 public class Calculate extends AppCompatActivity implements View.OnClickListener {
-    int c;
+
     TextView formula;
     TextView result;
     Button calculate;
     Formula f;
     FormulaCreate fc;
-
-    private Stack<Token> operatorStack;
-    private Stack<Token> valueStack;
+    static double value;
     private ArrayList<Token> tokens;
-    private boolean error;
-    private boolean work;
 
-    double lastValue =0;
+    private static ArrayList<Token> unprocessed;
+    private static ArrayList<Token> infix;
+    private static ArrayList<Token> postfix;
+    Calculate c;
+    private Stack<Token> opstack;
+    private Stack<Token> parenthesis;
+    private Stack<BinaryTree<Token>> binstack;
 
 
     @Override
@@ -37,17 +41,31 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculate2);
 
-        fc = new FormulaCreate();
-        operatorStack = new Stack<>();
-        valueStack = new Stack<>();
-        error = false;
-        tokens = fc.getFormula().get(listView.p).getForm();
 
+
+        fc = new FormulaCreate();
+        f = new Formula(fc.getFormula().get(listView.p).getForm());
+        tokens = new ArrayList<>();
+        for(int i=0; i<f.getForm().size();i++)
+        {
+            tokens.add(f.getForm().get(i));
+        }
+//        tokens = new ArrayList<>();
+//        tokens.add(new Token("a"));
+//        tokens.get(0).putValue(1);
+//        tokens.add(new Token("-"));
+//        tokens.add(new Token("a"));
+//        tokens.get(2).putValue(5);
+                for(int i = tokens.size()-1 ;i>=0;i--) {
+                    if (tokens.get(i).getType() == Token.NUMBER) {
+                        askNumb(i);
+                    }
+                }
 
         formula = (TextView) findViewById(R.id.textView2);
         result = (TextView) findViewById(R.id.result);
-        result.setText("0.0");
-        formula.setText(fc.getFormula().get(listView.p).toString());
+        //formula.setText(String.valueOf(tokens.get(0).getValue()));
+        formula.setText(f.toString());
         calculate = (Button) findViewById(R.id.button);
         calculate.setOnClickListener(this);
 
@@ -57,158 +75,335 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-            processInput();
-                if(work==false)
+//                for(int i = 0 ;i<tokens.size();i++) {
+//                    if (tokens.get(i).getType() == Token.NUMBER) {
+//                        tokens.get(i).putValue(askNumb());
+//                    }
+//                }
+                calculator(tokens);
+                preprocessor();
+                infix2postfix();
+                BinaryTree eTree = buildExpressionTree();
+                if(getInfix()==null||getPostfix()==null)
                 {
-                    result.setText("Expression Error");
+                    result.setText("Error Please Check your Formula");
                 }
-                else
-                {
-                    result.setText(Double.toString(lastValue));
+                else {
+                    result.setText(String.valueOf(evalExpressionTree(eTree)));
                 }
                 break;
         }
     }
 
-    private void processOperator(Token t) {
-        Token A = null, B = null;
-        if (tokens.size()==0) {
-            result.setText("Expression error.");
-            error = true;
-            return;
-        } else {
-            B = valueStack.pop();
-        }
-        if (valueStack.isEmpty()) {
-            result.setText("Expression error.");
-            error = true;
-            return;
-        } else {
-            A = valueStack.pop();
-        }
-        Token R = t.operate(A.getValue(), B.getValue());
-        valueStack.push(R);
-    }
+    public void askNumb(final int i)
+    {
 
-    public void processInput() {
-        for (int n = 0; n < tokens.size(); n++) {
-            final Token nextToken = tokens.get(n);
-            if (nextToken.getType() == Token.NUMBER) {
-
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle("Put value of variable for the formula");
-                final EditText edit = new EditText(this);
-                edit.setInputType(InputType.TYPE_CLASS_NUMBER);
-                edit.setRawInputType(Configuration.KEYBOARD_12KEY);
-                alert.setView(edit);
-                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        nextToken.putValue(Double.parseDouble(edit.getText().toString()));
-                    }
-                });
-                alert.show();
-
-                valueStack.push(nextToken);
-            } else if (nextToken.getType() == Token.OPERATOR) {
-                if (operatorStack.isEmpty() || nextToken.getPrecedence() > operatorStack.peek().getPrecedence()) {
-                    operatorStack.push(nextToken);
-                } else {
-                    while (!operatorStack.isEmpty() && nextToken.getPrecedence() <= operatorStack.peek().getPrecedence()) {
-                        Token toProcess = operatorStack.peek();
-                        operatorStack.pop();
-                        processOperator(toProcess);
-                    }
-                    operatorStack.push(nextToken);
-                }
-            } else if (nextToken.getType() == Token.LEFT_PARENTHESIS) {
-                operatorStack.push(nextToken);
-            } else if (nextToken.getType() == Token.RIGHT_PARENTHESIS) {
-                while (!operatorStack.isEmpty() && operatorStack.peek().getType() == Token.OPERATOR) {
-                    Token toProcess = operatorStack.peek();
-                    operatorStack.pop();
-                    processOperator(toProcess);
-                }
-                if (!operatorStack.isEmpty() && operatorStack.peek().getType() == Token.LEFT_PARENTHESIS) {
-                    operatorStack.pop();
-                } else {
-                    System.out.println("Error: unbalanced parenthesis.");
-                    error = true;
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Put value of variable for " + tokens.get(i).content);
+        final EditText edit = new EditText(this);
+        edit.setInputType(InputType.TYPE_CLASS_NUMBER);
+        edit.setRawInputType(Configuration.KEYBOARD_12KEY);
+        alert.setView(edit);
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                try {
+                    value = Double.parseDouble(edit.getText().toString());
+                    tokens.get(i).putValue(value);
+                } catch (NumberFormatException e) {
+                    value =0;
+                    return;
                 }
             }
-            else if(nextToken.getType()== Token.TRIG_NUMBER)
+        });
+        alert.show();
+
+    }
+
+    public void calculator(ArrayList<Token> exp)
+    {
+        unprocessed = exp;
+        infix = new ArrayList<>();
+        postfix = new ArrayList<>();
+        binstack = new Stack<BinaryTree<Token>>();
+        opstack = new Stack<Token>();
+        parenthesis = new Stack<Token>();
+    }
+    public ArrayList<Token> getOriginal()
+    {
+        return unprocessed;
+    }
+    public ArrayList<Token> getInfix()
+    {
+        return infix;
+    }
+    public ArrayList<Token> getPostfix()
+    {
+        return postfix;
+    }
+    public void preprocessor()
+    {
+        boolean error = false;
+
+        for(int i=0;i<unprocessed.size();i++)
+        {
+
+            Token token = unprocessed.get(i);
+            Token nexttoken = new Token();
+            boolean lastchar = false;
+            boolean isTokenDigit = false;
+            boolean isNextTokenDigit = false;;
+
+            if(i==unprocessed.size()-1)
             {
-                if(nextToken.content=="sin(var)")
-                {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                    alert.setTitle("Put value of variable for sin");
-                    final EditText edit = new EditText(this);
-                    edit.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    edit.setRawInputType(Configuration.KEYBOARD_12KEY);
-                    alert.setView(edit);
-                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            nextToken.putValue(Math.sin(Double.parseDouble(edit.getText().toString())));
-                        }
-                    });
-                    alert.show();
-                    valueStack.push(nextToken);
 
-                }
-                else if(nextToken.content=="cos(var)")
-                {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                    alert.setTitle("Put value of variable for cos");
-                    final EditText edit = new EditText(this);
-                    edit.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    edit.setRawInputType(Configuration.KEYBOARD_12KEY);
-                    alert.setView(edit);
-                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            nextToken.putValue(Math.cos(Double.parseDouble(edit.getText().toString())));
-                        }
-                    });
-                    alert.show();
-                    valueStack.push(nextToken);
-                }
-                else if(nextToken.content=="tan(var)")
-                {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                    alert.setTitle("Put value of variable for tan");
-                    final EditText edit = new EditText(this);
-                    edit.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    edit.setRawInputType(Configuration.KEYBOARD_12KEY);
-                    alert.setView(edit);
-                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            nextToken.putValue(Math.tan(Double.parseDouble(edit.getText().toString())));
-                        }
-                    });
-                    alert.show();
-                    valueStack.push(nextToken);
-                }
+                lastchar = true;
+            }
+            else
+            {
+                nexttoken = unprocessed.get(i+1);
             }
 
+
+            if(!lastchar)
+            {
+                isTokenDigit = token.getType() == Token.NUMBER;
+                isNextTokenDigit = nexttoken.getType() == Token.NUMBER;
+                if((isTokenDigit && nexttoken.getType()==Token.LPAREN)
+                        || (token.getType()==Token.RPAREN && isNextTokenDigit)
+                        || (token.getType()==Token.RPAREN) && (nexttoken.getType()==Token.LPAREN)
+                        || (token.getType()==Token.RPAREN && nexttoken.getType()==Token.POWER)
+                        || (isTokenDigit && nexttoken.getType()==Token.SIN)
+                        || (isTokenDigit && nexttoken.getType()==Token.COS)
+                        || (isTokenDigit && nexttoken.getType()==Token.TAN))
+                {
+                    infix.add(token);
+                    infix.add(new Token("*"));
+                    infix.add(nexttoken);
+                    i++;
+
+                }
+                else
+                {
+                    infix.add(token);
+                }
+            }
+            else if(lastchar)
+            {
+                infix.add(token);
+                //temp.add(token)
+            }
         }
-        // Empty out the operator stack at the end of the input
-        while (!operatorStack.isEmpty() && operatorStack.peek().getType() == Token.OPERATOR) {
-            Token toProcess = operatorStack.peek();
-            operatorStack.pop();
-            processOperator(toProcess);
+        if(error)
+            infix = postfix = null;
+
+    }
+
+    private int precedence(Token token)
+    {
+        int result = 0;
+        if(token.getType()==Token.SIN||token.getType()==Token.TAN||token.getType()==Token.COS||token.getType()==Token.LOG)
+        {
+            result = 3;
         }
-        // Print the result if no error has been seen.
-        if(error == false) {
-            Token result = valueStack.peek();
-            valueStack.pop();
-            if (!operatorStack.isEmpty() || !valueStack.isEmpty()) {
-                work = false;
-            } else {
-                work = true;
-                lastValue = result. getValue();
+        else if(token.getType()==Token.TIMES || token.getType()==Token.DIVIDE)
+        {
+            result = 2;
+        }
+        else if(token.getType()==Token.PLUS||token.getType()==Token.MINUS)
+        {
+            result = 1;
+        }
+
+        return result;
+    }
+    private void processOp(Token op)
+    {
+        if(opstack.empty() || op.getType()==Token.LPAREN)
+        {
+            opstack.push(op);
+        }
+        else
+        {
+            Token topop = opstack.peek();
+            if(precedence(op)>precedence(topop))
+            {
+                opstack.push(op);
+            }
+            else
+            {
+                while(!opstack.empty() && precedence(op) <= precedence(topop))
+                {
+                    opstack.pop();
+                    if(topop.getType()==Token.LPAREN)
+                    {
+                        break;
+                    }
+                    postfix.add(topop);
+                    if(!opstack.empty())
+                    {
+                        topop=opstack.peek();
+                    }
+                }
+                if(op.getType()!=Token.RPAREN)
+                    opstack.push(op);
             }
         }
     }
+    public void infix2postfix()
+    {
+        boolean error = false;
+
+        if(infix!=null)
+        {
+            for(int i=0;i<infix.size();i++)
+            {
+                Token token = infix.get(i);
+
+                try
+                {
+                    if(token.getType()==Token.LPAREN)
+                    {
+                        parenthesis.push(token);
+                    }
+                    if(token.getType()==Token.RPAREN)
+                    {
+                        parenthesis.pop();
+                    }
+                }
+                catch(EmptyStackException e)
+                {
+                    System.out.println("Unbalanced parenthesis.");
+                    postfix = null;
+                    error = true;
+                    break;
+                }
+
+                if(token.getType()==Token.NUMBER)
+                {
+                    postfix.add(token);
+                }
+                else if(token.isOp())
+                {
+                    processOp(token);
+                }
+
+            }
+            if(!parenthesis.empty())
+            {
+                System.out.println("Unbalanced parenthesis.");
+                postfix = null;
+                error = true;
+
+            }
+            if(!error)
+            {
+                while(!opstack.empty())
+                {
+                    Token op = opstack.pop();
+                    if(op.getType()==Token.LPAREN||op.getType()==Token.RPAREN)
+                    {
+
+                    }
+                    else postfix.add(op);
+
+                }
+
+            }
+        }
+    }
+    public BinaryTree<Token> buildExpressionTree()
+    {
+        if(postfix!=null)
+        {
+            Iterator<Token> elements = postfix.iterator();
+            Token token;
+            while(elements.hasNext())
+            {
+                token = elements.next();
+                if(token.getType()==Token.NUMBER)
+                {
+                    BinaryTree<Token> element = new BinaryTree<Token>(token,null,null);
+                    binstack.push(element);
+                }
+                else if(token.getType()==Token.E||token.getType()==Token.PI)
+                {
+                    BinaryTree<Token> element = new BinaryTree<Token>(token,null,null);
+                    binstack.push(element);
+                }
+                else if(token.getType()==Token.SIN
+                        ||token.getType()==Token.COS
+                        ||token.getType()==Token.TAN
+                        ||token.getType()==Token.LOG)
+
+                {
+                    BinaryTree<Token> left  = binstack.pop();
+                    BinaryTree<Token> element = new BinaryTree<>(token,left,null);
+                    binstack.push(element);
+                }
+                else
+                {
+                    BinaryTree<Token> right = binstack.pop();
+                    BinaryTree<Token> left = binstack.pop();
+                    BinaryTree<Token> element = new BinaryTree<Token>(token,left,right);
+
+                    binstack.push(element);
+                }
+            }
+            return binstack.pop();
+
+        }
+        else
+            return null;
+
+    }
+
+    public double evalExpressionTree(BinaryTree<Token> eTree)
+    {
+        if(eTree == null)
+            return 0;
+        else if(eTree.isLeaf())
+            return eTree.root.data.getValue();
+        else
+        {
+            Token op = eTree.root.data;
+            //Token op = eTree.root.data
+            double left = evalExpressionTree(eTree.getLeftSubtree());
+            double right = evalExpressionTree(eTree.getRightSubtree());
 
 
+            return evaluate(op, left, right);
+        }
+    }
+
+    /**Evaluates two numbers and returns result
+     *
+     * @param op operator
+     * @param left number
+     * @param right number
+     * @return result
+     */
+    private double evaluate(Token op, double left,double right)
+    {
+        // evaluate(Token op, double left, double right)
+        double result = 0;
+
+        switch(op.getType())
+        {
+            case Token.PLUS : result = left+right; break;
+            case Token.MINUS : result = left-right; break;
+            case Token.TIMES : result = left*right; break;
+            case Token.DIVIDE : result = left/right; break;
+            case Token.SIN: result = Math.sin(left); break;
+            case Token.COS: result = Math.cos(left); break;
+            case Token.TAN: result = Math.tan(left); break;
+            case Token.LOG: result = Math.log(left);break;
+
+        }
+
+
+
+        return result;
+    }
 
 
 }

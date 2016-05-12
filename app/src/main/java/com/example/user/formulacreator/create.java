@@ -26,14 +26,14 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     Button call;
     Button clear;
     TextView txt;
-    Formula formula = new Formula();
+    Formula formula;
     FormulaCreate fc;
     Token t;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
-
+        formula = new Formula();
 
         txt = (TextView)findViewById(R.id.textView3);
 
@@ -88,9 +88,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         }).create();
         builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
-
-                t = new Token(items[item]);
-                formula.add(t);
+                formula.add(new Token(items[item]));
                 txt.setText(txt.getText() + items[item]);
                 levelDialog.dismiss();
             }
@@ -100,7 +98,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     }
     private void openETC()
     {
-        final String[] items = {"sin(var)"," cos(var)", "tan(var)","Pi(3.14)", "e(2.718)","var*sin(var)","var*cos(var)", "var*tan(var)"};
+        final String[] items = {"sin"," cos", "tan","Pi", "e"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Variable");
         builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
