@@ -21,6 +21,18 @@ public class Token {
     public static final int POWER = 16;
     public static final int UNKNOWN = -1;
     public static final int LOG = 17;
+    public static final int EQUAL = 18;
+    public static final int GREATER = 19;
+    public static final int LESS = 20;
+    public static final int EQGREATER = 21;
+    public static final int EQAULLESS = 22;
+    public static final int NOTEUAL = 23;
+    public static final int IF = 24;
+    public static final int ELSE = 25;
+    public static final int THEN = 26;
+    public static final int AND = 27;
+    public static final int OR = 28;
+
 
 
     private int type;
@@ -69,7 +81,7 @@ public class Token {
                 type = TAN;
                 operator = contents;
                 break;
-            case "Pi":
+            case "pi":
                 type = PI;
                 content = contents;
                 value = 3.14;
@@ -85,6 +97,50 @@ public class Token {
                 break;
             case "log":
                 type = LOG;
+                content = contents;
+                break;
+            case "==":
+                type = EQUAL;
+                content = contents;
+                break;
+            case "!=":
+                type = NOTEUAL;
+                content = contents;
+                break;
+            case "<":
+                type = GREATER;
+                content = contents;
+                break;
+            case ">":
+                type = LESS;
+                content = contents;
+                break;
+            case "<=":
+                type = EQGREATER;
+                content = contents;
+                break;
+            case ">=":
+                type = EQAULLESS;
+                content = contents;
+                break;
+            case "IF":
+                type = IF;
+                content = contents;
+                break;
+            case "ELSE":
+                type = ELSE;
+                content = contents;
+                break;
+            case "THEN":
+                type = THEN;
+                content = contents;
+                break;
+            case "&&":
+                type = AND;
+                content = contents;
+                break;
+            case "||":
+                type = OR;
                 content = contents;
                 break;
             default:
@@ -103,7 +159,9 @@ public class Token {
     }
     public boolean isOp()
     {
-        if(type==PLUS||type==MINUS||type==TIMES||type==DIVIDE||type==LPAREN||type==RPAREN||type==SIN||type==LOG)
+        if(type==PLUS||type==MINUS||type==TIMES||type==DIVIDE||type==LPAREN||type==RPAREN
+                ||type==SIN||type==LOG||type==EQUAL||type==NOTEUAL||type==GREATER||type==LESS
+                ||type==EQAULLESS||type==EQGREATER||type==AND||type==OR)
             return true;
         return false;
     }

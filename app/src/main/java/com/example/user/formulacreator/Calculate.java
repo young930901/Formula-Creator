@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -22,7 +23,7 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     TextView formula;
     TextView result;
     Button calculate;
-    Formula f;
+    Formula form;
     FormulaCreate fc;
     static double value;
     private ArrayList<Token> tokens;
@@ -30,44 +31,105 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     private static ArrayList<Token> unprocessed;
     private static ArrayList<Token> infix;
     private static ArrayList<Token> postfix;
-    Calculate c;
     private Stack<Token> opstack;
     private Stack<Token> parenthesis;
     private Stack<BinaryTree<Token>> binstack;
 
+    double a= Double.MAX_VALUE;
+    double b= Double.MAX_VALUE;
+    double c= Double.MAX_VALUE;
+    double d= Double.MAX_VALUE;
+    double e= Double.MAX_VALUE;
+    double f= Double.MAX_VALUE;
+    double var= Double.MAX_VALUE;
+
+    private HashMap<String, Double> hmap = new HashMap<String, Double>();;
+
+
+    private ArrayList<Token> condition;
+    private ArrayList<Token> thenStmt;
+    private ArrayList<Token> elseStmt;
+
+    private double cond = 1.0;
+
+    private boolean isCond = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculate2);
-
-
+        hmap.put("a",a);
+        hmap.put("b",b);
+        hmap.put("c",c);
+        hmap.put("d",d);
+        hmap.put("e",e);
+        hmap.put("f",f);
+        hmap.put("Var",var);
 
         fc = new FormulaCreate();
-        f = new Formula(fc.getFormula().get(listView.p).getForm());
+        form = new Formula(fc.getFormula().get(listView.p).getForm());
         tokens = new ArrayList<>();
-        for(int i=0; i<f.getForm().size();i++)
-        {
-            tokens.add(f.getForm().get(i));
-        }
-//        tokens = new ArrayList<>();
-//        tokens.add(new Token("a"));
-//        tokens.get(0).putValue(1);
-//        tokens.add(new Token("-"));
-//        tokens.add(new Token("a"));
-//        tokens.get(2).putValue(5);
-                for(int i = tokens.size()-1 ;i>=0;i--) {
-                    if (tokens.get(i).getType() == Token.NUMBER) {
-                        askNumb(i);
-                    }
-                }
+
+
 
         formula = (TextView) findViewById(R.id.textView2);
         result = (TextView) findViewById(R.id.result);
-        //formula.setText(String.valueOf(tokens.get(0).getValue()));
-        formula.setText(f.toString());
+        formula.setText(form.toString());
         calculate = (Button) findViewById(R.id.button);
         calculate.setOnClickListener(this);
+
+        for(int i=0; i<form.getForm().size();i++)
+        {
+            tokens.add(form.getForm().get(i));
+        }
+                for(int i = tokens.size()-1 ;i>=0;i--) {
+                    if (tokens.get(i).getType() == Token.NUMBER) {
+                        if(hmap.get(tokens.get(i).content)!=Double.MAX_VALUE) {
+                            tokens.get(i).putValue(hmap.get(tokens.get(i)));
+
+                        }
+                        else
+                        {
+                            askNumb(i);
+                        }
+                    }
+                }
+
+
+        if(form.getIndex("IF")!=-1||form.getIndex("ELSE")!=-1||form.getIndex("THEN")!=-1)
+        {
+            if(form.validCondition()>3)
+            {
+                result.setText("INVALID CONDITIONAL");
+            }
+            else if(form.getIndex("IF")!=-1&&form.getIndex("ELSE")!=-1&&form.getIndex("THEN")!=-1)
+            {
+                isCond = true;
+                condition = new ArrayList<>();
+                thenStmt = new ArrayList<>();
+                elseStmt = new ArrayList<>();
+
+                for(int i=1; i<form.getIndex("THEN");i++)
+                {
+                    condition.add(form.getForm().get(i));
+                }
+                for(int i=form.getIndex("THEN")+1; i<form.getIndex("ELSE");i++)
+                {
+                    thenStmt.add(form.getForm().get(i));
+                }
+                for(int i=form.getIndex("ELSE")+1; i<form.getForm().size();i++)
+                {
+                    elseStmt.add(form.getForm().get(i));
+                }
+
+
+            }
+            else
+            {
+                result.setText("INVALID CONDITIONAL");
+            }
+
+        }
 
     }
 
@@ -75,21 +137,47 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-//                for(int i = 0 ;i<tokens.size();i++) {
-//                    if (tokens.get(i).getType() == Token.NUMBER) {
-//                        tokens.get(i).putValue(askNumb());
-//                    }
-//                }
-                calculator(tokens);
-                preprocessor();
-                infix2postfix();
-                BinaryTree eTree = buildExpressionTree();
-                if(getInfix()==null||getPostfix()==null)
+                if(isCond==true)
                 {
-                    result.setText("Error Please Check your Formula");
+                    calculator(condition);
+                    preprocessor();
+                    infix2postfix();
+                    BinaryTree eTree = buildExpressionTree();
+
+                    if(evalExpressionTree(eTree)==1)
+                    {
+                        calculator(thenStmt);
+                        preprocessor();
+                        infix2postfix();
+                        BinaryTree eTree2 = buildExpressionTree();
+                        result.setText(String.valueOf(evalExpressionTree(eTree2)));
+                    }
+                    else if(evalExpressionTree(eTree)==0)
+                    {
+                        calculator(elseStmt);
+                        preprocessor();
+                        infix2postfix();
+                        BinaryTree eTree2 = buildExpressionTree();
+                        result.setText(String.valueOf(evalExpressionTree(eTree2)));
+                    }
+                    else
+                    {
+                        result.setText("INVALID FORMULA");
+                    }
+
                 }
+
                 else {
-                    result.setText(String.valueOf(evalExpressionTree(eTree)));
+                    calculator(tokens);
+                    preprocessor();
+                    infix2postfix();
+                    BinaryTree eTree = buildExpressionTree();
+                    if (getInfix() == null || getPostfix() == null) {
+                        result.setText("Error Please Check your Formula");
+                    } else {
+                        result.setText(String.valueOf(evalExpressionTree(eTree)));
+                        //result.setText(String.valueOf(hmap.get("a")));
+                    }
                 }
                 break;
         }
@@ -101,7 +189,7 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Put value of variable for " + tokens.get(i).content);
         final EditText edit = new EditText(this);
-        edit.setInputType(InputType.TYPE_CLASS_NUMBER);
+        edit.setInputType(InputType.TYPE_CLASS_NUMBER| InputType.TYPE_NUMBER_FLAG_SIGNED);
         edit.setRawInputType(Configuration.KEYBOARD_12KEY);
         alert.setView(edit);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -109,6 +197,7 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
                 try {
                     value = Double.parseDouble(edit.getText().toString());
                     tokens.get(i).putValue(value);
+                    hmap.put(tokens.get(i).content,value);
                 } catch (NumberFormatException e) {
                     value =0;
                     return;
@@ -166,7 +255,8 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
 
             if(!lastchar)
             {
-                isTokenDigit = token.getType() == Token.NUMBER;
+                isTokenDigit = (token.getType()==Token.NUMBER)||(token.getType()==Token.PI)||(token.getType()==Token.E);
+
                 isNextTokenDigit = nexttoken.getType() == Token.NUMBER;
                 if((isTokenDigit && nexttoken.getType()==Token.LPAREN)
                         || (token.getType()==Token.RPAREN && isNextTokenDigit)
@@ -174,7 +264,11 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
                         || (token.getType()==Token.RPAREN && nexttoken.getType()==Token.POWER)
                         || (isTokenDigit && nexttoken.getType()==Token.SIN)
                         || (isTokenDigit && nexttoken.getType()==Token.COS)
-                        || (isTokenDigit && nexttoken.getType()==Token.TAN))
+                        || (isTokenDigit && nexttoken.getType()==Token.TAN)
+                        || (token.getType()==Token.RPAREN && nexttoken.getType()==Token.TAN)
+                        || (token.getType()==Token.RPAREN && nexttoken.getType()==Token.SIN)
+                        || (token.getType()==Token.RPAREN && nexttoken.getType()==Token.COS)
+                        )
                 {
                     infix.add(token);
                     infix.add(new Token("*"));
@@ -205,11 +299,15 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
         {
             result = 3;
         }
-        else if(token.getType()==Token.TIMES || token.getType()==Token.DIVIDE)
+        else if(token.getType()==Token.TIMES || token.getType()==Token.DIVIDE
+                || token.getType()==Token.EQAULLESS|| token.getType()==Token.EQGREATER
+                || token.getType()==Token.GREATER|| token.getType()==Token.LESS
+                || token.getType()==Token.EQUAL|| token.getType()==Token.NOTEUAL)
         {
             result = 2;
         }
-        else if(token.getType()==Token.PLUS||token.getType()==Token.MINUS)
+        else if(token.getType()==Token.PLUS||token.getType()==Token.MINUS
+                || token.getType()==Token.AND|| token.getType()==Token.OR)
         {
             result = 1;
         }
@@ -278,7 +376,7 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
                     break;
                 }
 
-                if(token.getType()==Token.NUMBER)
+                if(token.getType()==Token.NUMBER||token.getType()==Token.PI||token.getType()==Token.E)
                 {
                     postfix.add(token);
                 }
@@ -320,12 +418,7 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
             while(elements.hasNext())
             {
                 token = elements.next();
-                if(token.getType()==Token.NUMBER)
-                {
-                    BinaryTree<Token> element = new BinaryTree<Token>(token,null,null);
-                    binstack.push(element);
-                }
-                else if(token.getType()==Token.E||token.getType()==Token.PI)
+                if(token.getType()==Token.NUMBER||token.getType()==Token.PI||token.getType()==Token.E)
                 {
                     BinaryTree<Token> element = new BinaryTree<Token>(token,null,null);
                     binstack.push(element);
@@ -374,17 +467,8 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
             return evaluate(op, left, right);
         }
     }
-
-    /**Evaluates two numbers and returns result
-     *
-     * @param op operator
-     * @param left number
-     * @param right number
-     * @return result
-     */
-    private double evaluate(Token op, double left,double right)
+ private double evaluate(Token op, double left,double right)
     {
-        // evaluate(Token op, double left, double right)
         double result = 0;
 
         switch(op.getType())
@@ -398,6 +482,14 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
             case Token.TAN: result = Math.tan(left); break;
             case Token.LOG: result = Math.log(left);break;
 
+            case Token.EQUAL : return (left==right)?1.0:0.0;
+            case Token.OR : return (int)left | (int)right;
+            case Token.AND : return (int)left & (int)right;
+            case Token.NOTEUAL : return (left!=right)?1.0:0.0;
+            case Token.GREATER : return (right>left)?1.0:0.0;
+            case Token.LESS : return (right<left)?1.0:0.0;
+            case Token.EQGREATER : return (right>=left)?1.0:0.0;
+            case Token.EQAULLESS : return (right<=left)?1.0:0.0;
         }
 
 

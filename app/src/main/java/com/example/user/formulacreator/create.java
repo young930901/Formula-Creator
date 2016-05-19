@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 
 public class create extends AppCompatActivity implements View.OnClickListener{
@@ -25,6 +26,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     Button save;
     Button call;
     Button clear;
+    Button condition;
     TextView txt;
     Formula formula;
     FormulaCreate fc;
@@ -49,7 +51,8 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         call.setOnClickListener(this);
         clear = (Button)findViewById(R.id.clear);
         clear.setOnClickListener(this);
-
+        condition = (Button) findViewById(R.id.condition);
+        condition.setOnClickListener(this);
 
     }
 
@@ -69,7 +72,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
 
                 t = new Token(items[item]);
                 formula.add(t);
-                txt.setText(txt.getText() + items[item]);
+                txt.setText(formula.toString());
                 levelDialog.dismiss();
             }
         });
@@ -89,7 +92,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 formula.add(new Token(items[item]));
-                txt.setText(txt.getText() + items[item]);
+                txt.setText(formula.toString());
                 levelDialog.dismiss();
             }
         });
@@ -98,7 +101,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     }
     private void openETC()
     {
-        final String[] items = {"sin"," cos", "tan","Pi", "e"};
+        final String[] items = {"sin","cos","tan","pi","e"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Variable");
         builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
@@ -111,7 +114,7 @@ public class create extends AppCompatActivity implements View.OnClickListener{
 
                 t = new Token(items[item]);
                 formula.add(t);
-                txt.setText(txt.getText() + items[item]);
+                txt.setText(formula.toString());
                 levelDialog.dismiss();
             }
         });
@@ -119,9 +122,6 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         levelDialog.show();
     }
     private void save() throws IOException {
-
-
-
             fc = new FormulaCreate();
             fc.putFormula(formula);
     try {
@@ -155,6 +155,59 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         txt.setText(formula.toString());
 
     }
+
+    private void call()
+    {
+        ArrayList<String> f = new ArrayList<>();
+        fc = new FormulaCreate();
+        formula = new Formula();
+        for(int i=0; i<fc.size();i++)
+        {
+            f.add(fc.getFormula().get(i).toString());
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Variable");
+        builder.setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).create();
+        builder.setSingleChoiceItems(f.toArray(new String[f.size()]), -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                formula.append(fc.getFormula().get(i));
+                txt.setText(formula.toString());
+                dialog.dismiss();
+            }
+        });
+
+        levelDialog = builder.create();
+        levelDialog.show();
+
+    }
+
+    public void conditionList()
+    {
+        final String[] items = {"IF","ELSE","THEN", "==", "<=",">=","<",">","!=","||","&&"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Follw Format: IF condtion THEN Formula ELSE Formula");
+        builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).create();
+        builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                formula.add(new Token(items[item]));
+                txt.setText(formula.toString());
+                levelDialog.dismiss();
+            }
+        });
+        levelDialog = builder.create();
+        levelDialog.show();
+
+    }
     @Override
     public void onClick(View v) {
         switch(v.getId())
@@ -177,6 +230,12 @@ public class create extends AppCompatActivity implements View.OnClickListener{
                 break;
             case R.id.clear:
                 clear();
+                break;
+            case R.id.call:
+                call();
+                break;
+            case R.id.condition:
+                conditionList();
                 break;
         }
     }

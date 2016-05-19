@@ -33,6 +33,8 @@ public class calculator
     private Stack<Token> parenthesis;
     private Stack<BinaryTree<Token>> binstack;
 
+    private int a = -1;
+
 
     public calculator(ArrayList<Token> exp)
     {
@@ -89,7 +91,11 @@ public class calculator
                         || (token.getType()==Token.RPAREN && nexttoken.getType()==Token.POWER)
                         || (isTokenDigit && nexttoken.getType()==Token.SIN)
                         || (isTokenDigit && nexttoken.getType()==Token.COS)
-                        || (isTokenDigit && nexttoken.getType()==Token.TAN))
+                        || (isTokenDigit && nexttoken.getType()==Token.TAN)
+                        || (token.getType()==Token.RPAREN && nexttoken.getType()==Token.SIN)
+                        || (token.getType()==Token.RPAREN && nexttoken.getType()==Token.COS)
+                        || (token.getType()==Token.RPAREN && nexttoken.getType()==Token.TAN))
+
                 {
                     infix.add(token);
                     infix.add(new Token("*"));
@@ -313,6 +319,14 @@ public class calculator
             case Token.TAN: result = Math.tan(left); break;
             case Token.LOG: result = Math.log(left);break;
 
+            case Token.EQUAL : return (left==right)?1.0:0.0;
+            case Token.OR : return (int)left | (int)right;
+            case Token.AND : return (int)left & (int)right;
+            case Token.NOTEUAL : return (left!=right)?1.0:0.0;
+            case Token.GREATER : return (left>right)?1.0:0.0;
+            case Token.LESS : return (left<right)?1.0:0.0;
+            case Token.EQGREATER : return (left>=right)?1.0:0.0;
+            case Token.EQAULLESS : return (left<=right)?1.0:0.0;
         }
 
 
