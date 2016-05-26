@@ -210,13 +210,13 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
             {
                     try {
                         value = Double.parseDouble(edit.getText().toString());
-                        hmap = new HashMap<>();
                         hmap.put(tokens.get(i).content, value);
                         tokens.get(i).putValue(value);
                         dialog.dismiss();
                     }
                     catch(NumberFormatException e)
                     {
+                        result.setText(e.getMessage());
                         tokens.get(i).putValue(0);
                     }
             }
