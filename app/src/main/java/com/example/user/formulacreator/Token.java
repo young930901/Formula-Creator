@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by user on 4/28/2016.
  */
-public class Token {
+public class Token implements Serializable{
     public static final int MINUS = 4;
     public static final int NUMBER = 9;
     public static final int PLUS = 3;

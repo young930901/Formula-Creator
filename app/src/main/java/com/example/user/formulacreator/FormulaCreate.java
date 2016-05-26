@@ -4,14 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by user on 4/12/2016.
  */
-public class FormulaCreate
-{int p;
+public class FormulaCreate implements Serializable
+{   int p;
     public static ArrayList<Formula> formulas = new ArrayList<>();
 
     public static void putFormula(Formula s){ formulas.add(s);}

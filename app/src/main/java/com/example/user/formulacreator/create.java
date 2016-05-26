@@ -121,11 +121,12 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         levelDialog = builder.create();
         levelDialog.show();
     }
+
     private void save() throws IOException {
             fc = new FormulaCreate();
             fc.putFormula(formula);
     try {
-        FileOutputStream out = new FileOutputStream("formulas.txt");
+        FileOutputStream out = new FileOutputStream("test.bin");
         ObjectOutputStream oout = new ObjectOutputStream(out);
         oout.writeObject(fc);
         oout.close();

@@ -26,7 +26,7 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     Formula form;
     FormulaCreate fc;
     static double value;
-    private ArrayList<Token> tokens;
+    static private ArrayList<Token> tokens;
 
     private static ArrayList<Token> unprocessed;
     private static ArrayList<Token> infix;
@@ -34,17 +34,8 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     private Stack<Token> opstack;
     private Stack<Token> parenthesis;
     private Stack<BinaryTree<Token>> binstack;
-
-    double a= Double.MAX_VALUE;
-    double b= Double.MAX_VALUE;
-    double c= Double.MAX_VALUE;
-    double d= Double.MAX_VALUE;
-    double e= Double.MAX_VALUE;
-    double f= Double.MAX_VALUE;
-    double var= Double.MAX_VALUE;
-
-    private HashMap<String, Double> hmap = new HashMap<String, Double>();;
-
+    private HashMap<String, Double> hmap = new HashMap<String, Double>();
+    AlertDialog.Builder alert;
 
     private ArrayList<Token> condition;
     private ArrayList<Token> thenStmt;
@@ -58,13 +49,6 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculate2);
-        hmap.put("a",a);
-        hmap.put("b",b);
-        hmap.put("c",c);
-        hmap.put("d",d);
-        hmap.put("e",e);
-        hmap.put("f",f);
-        hmap.put("Var",var);
 
         fc = new FormulaCreate();
         form = new Formula(fc.getFormula().get(listView.p).getForm());
@@ -84,14 +68,17 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
         }
                 for(int i = tokens.size()-1 ;i>=0;i--) {
                     if (tokens.get(i).getType() == Token.NUMBER) {
-                        if(hmap.get(tokens.get(i).content)!=Double.MAX_VALUE) {
-                            tokens.get(i).putValue(hmap.get(tokens.get(i)));
-
+                        if(hmap.containsKey(tokens.get(i).content)) {
+                            tokens.get(i).putValue(hmap.get(tokens.get(i).content));
                         }
                         else
                         {
                             askNumb(i);
                         }
+
+                        result.setText(String.valueOf(tokens.get(i).getValue()));
+                        //result.setText(String.valueOf(value));
+
                     }
                 }
 
@@ -141,43 +128,66 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
                 {
                     calculator(condition);
                     preprocessor();
-                    infix2postfix();
-                    BinaryTree eTree = buildExpressionTree();
-
-                    if(evalExpressionTree(eTree)==1)
-                    {
-                        calculator(thenStmt);
-                        preprocessor();
-                        infix2postfix();
-                        BinaryTree eTree2 = buildExpressionTree();
-                        result.setText(String.valueOf(evalExpressionTree(eTree2)));
-                    }
-                    else if(evalExpressionTree(eTree)==0)
-                    {
-                        calculator(elseStmt);
-                        preprocessor();
-                        infix2postfix();
-                        BinaryTree eTree2 = buildExpressionTree();
-                        result.setText(String.valueOf(evalExpressionTree(eTree2)));
-                    }
-                    else
+                    if(infix==null||postfix==null)
                     {
                         result.setText("INVALID FORMULA");
                     }
+                    else
+                    {
+                        infix2postfix();
+                        BinaryTree eTree = buildExpressionTree();
 
+                        if(evalExpressionTree(eTree)==1)
+                        {
+                            calculator(thenStmt);
+                            preprocessor();
+                            if(infix==null||postfix==null)
+                            {
+                                result.setText("INVALID FORMULA");
+                            }
+                            else
+                            {
+                                infix2postfix();
+                                BinaryTree eTree2 = buildExpressionTree();
+                                result.setText(String.valueOf(evalExpressionTree(eTree2)));
+                            }
+                        }
+                        else if(evalExpressionTree(eTree)==0)
+                        {
+                            calculator(elseStmt);
+                            preprocessor();
+                            if(infix==null||postfix==null)
+                            {
+                                result.setText("INVALID FORMULA");
+                            }
+                            else
+                            {
+                                infix2postfix();
+                                BinaryTree eTree2 = buildExpressionTree();
+                                result.setText(String.valueOf(evalExpressionTree(eTree2)));
+                            }
+                        }
+                        else
+                        {
+                            result.setText("INVALID FORMULA");
+                        }
+                    }
                 }
 
                 else {
                     calculator(tokens);
                     preprocessor();
-                    infix2postfix();
-                    BinaryTree eTree = buildExpressionTree();
-                    if (getInfix() == null || getPostfix() == null) {
-                        result.setText("Error Please Check your Formula");
-                    } else {
-                        result.setText(String.valueOf(evalExpressionTree(eTree)));
-                        //result.setText(String.valueOf(hmap.get("a")));
+                    if(infix==null||postfix==null)
+                    {
+                        result.setText("INVALID FORMULA");
                     }
+                    else
+                    {
+                        infix2postfix();
+                        BinaryTree eTree2 = buildExpressionTree();
+                        result.setText(String.valueOf(evalExpressionTree(eTree2)));
+                    }
+                    //result.setText(String.valueOf(hmap.containsKey("a")));
                 }
                 break;
         }
@@ -185,29 +195,43 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
 
     public void askNumb(final int i)
     {
-
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final String s;
+        alert = new AlertDialog.Builder(this);
         alert.setTitle("Put value of variable for " + tokens.get(i).content);
         final EditText edit = new EditText(this);
-        edit.setInputType(InputType.TYPE_CLASS_NUMBER| InputType.TYPE_NUMBER_FLAG_SIGNED);
-        edit.setRawInputType(Configuration.KEYBOARD_12KEY);
+        edit.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
         alert.setView(edit);
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                try {
-                    value = Double.parseDouble(edit.getText().toString());
-                    tokens.get(i).putValue(value);
-                    hmap.put(tokens.get(i).content,value);
-                } catch (NumberFormatException e) {
-                    value =0;
-                    return;
-                }
+
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener()
+        {
+
+            public void onClick(DialogInterface dialog, int whichButton)
+            {
+                    try {
+                        value = Double.parseDouble(edit.getText().toString());
+                        hmap = new HashMap<>();
+                        hmap.put(tokens.get(i).content, value);
+                        tokens.get(i).putValue(value);
+                        dialog.dismiss();
+                    }
+                    catch(NumberFormatException e)
+                    {
+                        tokens.get(i).putValue(0);
+                    }
             }
-        });
+        };
+        alert.setPositiveButton("Ok", listener);
+        alert.create();
         alert.show();
 
-    }
 
+    }
+    public void setValue(double d,int i)
+    {
+        hmap.put(tokens.get(i).content, d);
+//        result.setText(String.valueOf(hmap.containsKey(tokens.get(i).content)));
+    }
     public void calculator(ArrayList<Token> exp)
     {
         unprocessed = exp;
