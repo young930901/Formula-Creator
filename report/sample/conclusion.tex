@@ -1,0 +1,35 @@
+\section{Conclusion}
+\label{cha:conclusion}
+
+In this paper, we have demonstrated a general-purpose stego system that allows secret communication through the
+Twitter social network using only metadata for communication.  We have showed that this system can be used for
+botnet command and control through the development of a Twitter stego system and a specialized botnet
+C\&C language. 
+We have discussed the performance evaluation of the proposed system using Emulab, 
+and usability study using Amazon MTurk. We have also discussed how the vast 
+userbase and large scale of Twitter facilitates ample steganograpic security.  
+By demonstrating how a botmaster might perform
+such communication using online social networks, our work provides the basis
+to detect and prevent emerging botnet activities.
+
+There are other possible steganographic techniques that can be applied using
+Twitter.  For example, Twitter allows posting images along with
+tweets\footnote{\url{https://support.twitter.com/articles/20156423-posting-photos-on-twitter}}
+and there are many existing image steganography techniques \cite{watermarking}
+that are often used for watermarking, but can also be used for communication.
+The existing system can also be used on other social network websites such
+as Facebook, but it may be necessary to collect data from these websites when
+deciding on the message length distribution.  Unlike Twitter, these other
+websites generally allow much longer posts, so the system could take advantage
+of the increased variation.
+
+It is possible to use this system for key exchange for other existing stego
+systems.  It is necessary in steganographic key exchange to have a stego
+system that can be used to transmit the key, otherwise an adversary can detect
+the communication of the keys.  Because this system has a relatively low
+information bandwidth, it may be well suited for key exchange that does not
+require a significant amount of information.  This concept is applied in
+cryptography where a public key algorithm such as RSA is used to send a
+key for a symmetric algorithm such as AES because AES can achieve better
+encryption and decryption performance than RSA, although it is technically
+possible to send all of the communications using RSA.
