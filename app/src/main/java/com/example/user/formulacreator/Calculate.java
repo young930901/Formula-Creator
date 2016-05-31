@@ -2,6 +2,7 @@ package com.example.user.formulacreator;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,7 +20,7 @@ import java.util.Iterator;
 import java.util.Stack;
 
 public class Calculate extends AppCompatActivity implements View.OnClickListener {
-
+    protected static final String AndroidCoding= null;
     TextView formula;
     TextView result;
     Button calculate;
@@ -177,13 +178,13 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
                 else {
                     calculator(tokens);
                     preprocessor();
+                    infix2postfix();
                     if(infix==null||postfix==null)
                     {
                         result.setText("INVALID FORMULA");
                     }
                     else
                     {
-                        infix2postfix();
                         BinaryTree eTree2 = buildExpressionTree();
                         result.setText(String.valueOf(evalExpressionTree(eTree2)));
                     }
@@ -195,7 +196,8 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
 
     public void askNumb(final int i)
     {
-        final String s;
+        String s;
+
         alert = new AlertDialog.Builder(this);
         alert.setTitle("Put value of variable for " + tokens.get(i).content);
         final EditText edit = new EditText(this);
@@ -213,6 +215,10 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
                         hmap = new HashMap<>();
                         hmap.put(tokens.get(i).content, value);
                         tokens.get(i).putValue(value);
+
+                        SharedPreferences.Editor editor = getSharedPreferences(AndroidCoding, MODE_PRIVATE).edit();
+                        editor.putString("AC", edit.getText().toString());
+                        editor.commit();
                         dialog.dismiss();
                     }
                     catch(NumberFormatException e)
@@ -225,6 +231,10 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
         alert.create();
         alert.show();
 
+        SharedPreferences prefs = getSharedPreferences(AndroidCoding, MODE_PRIVATE);
+        s = prefs.getString("AC", "nothing/no value");
+        value = Double.parseDouble(s);
+        hmap.put(tokens.get(i).content, value);
 
     }
     public void setValue(double d,int i)
@@ -483,7 +493,6 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
         else
         {
             Token op = eTree.root.data;
-            //Token op = eTree.root.data
             double left = evalExpressionTree(eTree.getLeftSubtree());
             double right = evalExpressionTree(eTree.getRightSubtree());
 
