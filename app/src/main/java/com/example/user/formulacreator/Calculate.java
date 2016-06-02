@@ -35,7 +35,7 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     private Stack<Token> opstack;
     private Stack<Token> parenthesis;
     private Stack<BinaryTree<Token>> binstack;
-    private HashMap<String, Double> hmap = new HashMap<String, Double>();
+    private HashMap<String, Double> hmap;
     AlertDialog.Builder alert;
 
     private ArrayList<Token> condition;
@@ -50,7 +50,7 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculate2);
-
+        hmap = new HashMap<String, Double>();
         fc = new FormulaCreate();
         form = new Formula(fc.getFormula().get(listView.p).getForm());
         tokens = new ArrayList<>();
@@ -76,10 +76,6 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
                         {
                             askNumb(i);
                         }
-
-                        result.setText(String.valueOf(tokens.get(i).getValue()));
-                        //result.setText(String.valueOf(value));
-
                     }
                 }
 
@@ -196,8 +192,11 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
 
     public void askNumb(final int i)
     {
-        String s;
-
+        SharedPreferences sp = getSharedPreferences("MyKey", 0);
+        SharedPreferences.Editor preferencesEditor = sp.edit();
+        preferencesEditor.clear();
+        preferencesEditor.remove("tag");
+        result.setText(String.valueOf(sp.getLong("tag", 0)));
         alert = new AlertDialog.Builder(this);
         alert.setTitle("Put value of variable for " + tokens.get(i).content);
         final EditText edit = new EditText(this);
@@ -212,12 +211,14 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
             {
                     try {
                         value = Double.parseDouble(edit.getText().toString());
-                        hmap.put(tokens.get(i).content, value);
                         tokens.get(i).putValue(value);
 
-                        SharedPreferences.Editor editor = getSharedPreferences(AndroidCoding, MODE_PRIVATE).edit();
-                        editor.putString("AC", edit.getText().toString());
-                        editor.commit();
+                        SharedPreferences sp = getSharedPreferences("MyKey", 0);
+                        SharedPreferences.Editor preferencesEditor = sp.edit();
+
+                        preferencesEditor.putLong("tag", (long)value);
+                        preferencesEditor.commit();
+
                         dialog.dismiss();
                     }
                     catch(NumberFormatException e)
@@ -230,12 +231,16 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
         alert.setPositiveButton("Ok", listener);
         alert.create();
         alert.show();
-
-        SharedPreferences prefs = getSharedPreferences(AndroidCoding, MODE_PRIVATE);
-        s = prefs.getString("AC", "nothing/no value");
-        value = Double.parseDouble(s);
-        hmap.put(tokens.get(i).content, value);
-
+//        boolean a = true;
+//        while(a)
+//        {
+//            if(sp.contains("tag"))
+//            {
+//                value = sp.getLong("tag",0);
+//                hmap.put(tokens.get(i).content,value);
+//                a=false;
+//            }
+//        }
     }
     public void setValue(double d,int i)
     {

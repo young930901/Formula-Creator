@@ -3,6 +3,7 @@ package com.example.user.formulacreator;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -121,21 +123,19 @@ public class create extends AppCompatActivity implements View.OnClickListener{
         levelDialog = builder.create();
         levelDialog.show();
     }
+    public static void serialize(Object obj, String fileName)
+            throws IOException {
+        FileOutputStream fos = new FileOutputStream(fileName);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(obj);
+        oos.close();
+    }
 
     private void save() throws IOException {
             fc = new FormulaCreate();
             fc.putFormula(formula);
-    try {
-        FileOutputStream out = new FileOutputStream("test.bin");
-        ObjectOutputStream oout = new ObjectOutputStream(out);
-        oout.writeObject(fc);
-        oout.close();
-        out.close();
-    }
-    catch(Exception e)
-    {
 
-    }
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("Formula Created");
             alertDialog.setMessage("Your Eqn is saved. Go to the menu and try it!")

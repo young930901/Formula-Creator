@@ -1,38 +1,46 @@
 %%This is a very basic article template.
 %%There is just one section and two subsections.
 \documentclass{article}
-\title{Senior Project Report}
-\author{Young Song}
-\date{\today}
 
-\begin{document}
-
-\maketitle
-
-\begin{comment}
-\begin{titlepage}
-   \vspace*{\stretch{1.0}}
-   \begin{center}
-      \Large\textbf{Senior Project Report}\\[2in]
-      \large\textit{Young Song}\\[2in]
-      \large\textit{Cal Poly Pomona}
-   \end{center}
-   \vspace*{\stretch{2.0}}
-\end{titlepage}
-\end{comment}
+ \title{Senior Project Report}
+ \author{Young Song}
+ \date{\today}
+ 
+ \begin{document}
+ 
+ \maketitle
 
 \section{Introduction}
 This is an application that the user can manually input the numbers of variable
 and operation. The created formula is usable for different values.
-\section{Tokens}
-
-Plain text.
-
+\section{Tokenize}
+Each variable and operator is tokenized whenever the users choose and add to
+their formulas. Each token has its type as final integer. Therefore, to check
+its type, i just be able to call its name of type. The advantage of using token
+class is that I do not need further tokenize for parsing. It saves much work.
 \section{Parsing}
 
 More plain text.
 \section{Call Existing}
-\section{Save}
-\section{Retrieve previous formulas}
-
+This function allows uses don't need to make same formula by adding varaible and
+operator one by one to append or edit it. Users can just simply call the same
+formula and append the formula to whatever they currently have. This can save
+the time of users.
+\section{Save and Retreive Data}
+The first idea for save is to serialize the formul create class which is the
+arralist of formula to the text or bin file. However, because, whenever
+application restarts, it reseted the content of the text file, I rather used the
+bundle to save the state of the application. In saved instance, I put the
+arraylist of formula, and whenever the application restarts and the class is
+created, if the saved instance is not empty, it calls the arraylist of formula
+which is saved in saved instance.
+\section{Challenge}
+The most challenging part of this project was to implement parsing function. The
+original idea of using parsing is to implement the CUP or ANTLR which create the
+grammar rule for the parsing and automatically create the java file. However,
+the tutorial file of CUP and ANTRL was not compiled for some reasons. So, I had
+to manually create the parsing function. This was pretty challenging because I
+had to convert the formula in post form and push it to the binary tree. Because
+I had to do this from scratch, it took much time.
+\section{Future Work}
 \end{document}

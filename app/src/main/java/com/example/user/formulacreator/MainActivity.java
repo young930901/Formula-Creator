@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -25,13 +26,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button createFormulaPg;
     Button loadPg;
     Button thisApp;
-
     FormulaCreate fc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if(savedInstanceState!=null&&savedInstanceState.getSerializable("saved")!=null)
+        {
+                fc = (FormulaCreate)savedInstanceState.getSerializable("saved");
+        }
 
         createFormulaPg = (Button)findViewById(R.id.button1);
         createFormulaPg.setOnClickListener(this);
@@ -40,15 +44,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         thisApp = (Button)findViewById(R.id.button3);
         thisApp.setOnClickListener(this);
 
-        try {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("test.bin"));
-            fc = (FormulaCreate)ois.readObject();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("saved", fc);
+    }
 
 
 
