@@ -1,6 +1,7 @@
 package com.example.user.formulacreator;
 
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -18,6 +19,7 @@ import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.concurrent.CountDownLatch;
 
 public class Calculate extends AppCompatActivity implements View.OnClickListener {
     protected static final String AndroidCoding= null;
@@ -69,13 +71,18 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
         }
                 for(int i = tokens.size()-1 ;i>=0;i--) {
                     if (tokens.get(i).getType() == Token.NUMBER) {
+
                         if(hmap.containsKey(tokens.get(i).content)) {
+
                             tokens.get(i).putValue(hmap.get(tokens.get(i).content));
+
+
                         }
                         else
                         {
                             askNumb(i);
                         }
+
                     }
                 }
 
@@ -181,9 +188,16 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
                     }
                     else
                     {
-                        BinaryTree eTree2 = buildExpressionTree();
-                        result.setText(String.valueOf(evalExpressionTree(eTree2)));
-                    }
+                        try {
+                            BinaryTree eTree2 = buildExpressionTree();
+                            result.setText(String.valueOf(evalExpressionTree(eTree2)));
+                        }
+                        catch(EmptyStackException e)
+                        {
+                            result.setText("INVALID FORMULA");
+                        }
+
+                        }
                     //result.setText(String.valueOf(hmap.containsKey("a")));
                 }
                 break;
@@ -192,11 +206,12 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
 
     public void askNumb(final int i)
     {
+        final CountDownLatch latch = new CountDownLatch(1);
+
         SharedPreferences sp = getSharedPreferences("MyKey", 0);
         SharedPreferences.Editor preferencesEditor = sp.edit();
-        preferencesEditor.clear();
         preferencesEditor.remove("tag");
-        result.setText(String.valueOf(sp.getLong("tag", 0)));
+        preferencesEditor.commit();
         alert = new AlertDialog.Builder(this);
         alert.setTitle("Put value of variable for " + tokens.get(i).content);
         final EditText edit = new EditText(this);
@@ -204,48 +219,43 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
 
         alert.setView(edit);
 
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener()
-        {
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                setValue(i);
 
-            public void onClick(DialogInterface dialog, int whichButton)
-            {
-                    try {
-                        value = Double.parseDouble(edit.getText().toString());
-                        tokens.get(i).putValue(value);
+                try {
+                    value = Double.parseDouble(edit.getText().toString());
+                    tokens.get(i).putValue(value);
 
-                        SharedPreferences sp = getSharedPreferences("MyKey", 0);
-                        SharedPreferences.Editor preferencesEditor = sp.edit();
+                    SharedPreferences sp = getSharedPreferences("MyKey", 0);
+                    SharedPreferences.Editor preferencesEditor = sp.edit();
 
-                        preferencesEditor.putLong("tag", (long)value);
-                        preferencesEditor.commit();
+                    preferencesEditor.commit();
+                    dialog.dismiss();
 
-                        dialog.dismiss();
-                    }
-                    catch(NumberFormatException e)
-                    {
-                        result.setText(e.getMessage());
-                        tokens.get(i).putValue(0);
-                    }
+                } catch (NumberFormatException e) {
+                    result.setText(e.getMessage());
+                    tokens.get(i).putValue(0);
+                    latch.countDown();
+                }
             }
-        };
-        alert.setPositiveButton("Ok", listener);
+        });
+
         alert.create();
         alert.show();
-//        boolean a = true;
-//        while(a)
-//        {
-//            if(sp.contains("tag"))
-//            {
-//                value = sp.getLong("tag",0);
-//                hmap.put(tokens.get(i).content,value);
-//                a=false;
-//            }
-//        }
+
+
+
     }
-    public void setValue(double d,int i)
+    public void setValue(int i)
     {
-        hmap.put(tokens.get(i).content, d);
-//        result.setText(String.valueOf(hmap.containsKey(tokens.get(i).content)));
+        SharedPreferences sp = getSharedPreferences("MyKey", 0);
+        SharedPreferences.Editor preferencesEditor = sp.edit();
+
+        hmap.put(tokens.get(i).content, (double) sp.getLong("tag", 0));
+
+        preferencesEditor.clear();
+        preferencesEditor.commit();
     }
     public void calculator(ArrayList<Token> exp)
     {
@@ -255,18 +265,6 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
         binstack = new Stack<BinaryTree<Token>>();
         opstack = new Stack<Token>();
         parenthesis = new Stack<Token>();
-    }
-    public ArrayList<Token> getOriginal()
-    {
-        return unprocessed;
-    }
-    public ArrayList<Token> getInfix()
-    {
-        return infix;
-    }
-    public ArrayList<Token> getPostfix()
-    {
-        return postfix;
     }
     public void preprocessor()
     {
@@ -472,13 +470,14 @@ public class Calculate extends AppCompatActivity implements View.OnClickListener
                     BinaryTree<Token> element = new BinaryTree<>(token,left,null);
                     binstack.push(element);
                 }
-                else
-                {
+                else {
                     BinaryTree<Token> right = binstack.pop();
                     BinaryTree<Token> left = binstack.pop();
-                    BinaryTree<Token> element = new BinaryTree<Token>(token,left,right);
+                    BinaryTree<Token> element = new BinaryTree<Token>(token, left, right);
 
                     binstack.push(element);
+
+
                 }
             }
             return binstack.pop();

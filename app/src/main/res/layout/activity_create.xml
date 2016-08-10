@@ -15,54 +15,47 @@
         android:layout_height="match_parent"
         android:id="@+id/linearLayout"
         android:weightSum="1"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_marginTop="172dp"
         android:layout_below="@+id/textView3"
-        android:layout_alignRight="@+id/call"
-        android:layout_alignEnd="@+id/call">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="239dp"
-            android:layout_gravity="bottom"
             android:weightSum="1">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Condition"
+                android:id="@+id/condition" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Operation"
                 android:id="@+id/operation" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Condition"
-                android:id="@+id/condition"
-                android:layout_gravity="center_horizontal" />
         </LinearLayout>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Variable"
-            android:id="@+id/variable"
-            android:layout_gravity="center_vertical" />
+            android:id="@+id/variable" />
 
         <Button
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:text="ETC"
-            android:id="@+id/etc"
-            android:layout_gravity="center_vertical" />
+            android:id="@+id/etc" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Save"
             android:id="@+id/save"
-            android:layout_gravity="center_vertical"
             android:layout_alignBottom="@+id/linearLayout"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />

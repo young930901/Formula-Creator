@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
+import com.google.gson.Gson;
+
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -136,7 +138,16 @@ public class create extends AppCompatActivity implements View.OnClickListener{
             fc = new FormulaCreate();
             fc.putFormula(formula);
 
-            final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+
+        SharedPreferences prefs = getSharedPreferences("User", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+
+        String json = gson.toJson(fc);
+        editor.putString("MyObject", json);
+        editor.commit();
+
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("Formula Created");
             alertDialog.setMessage("Your Eqn is saved. Go to the menu and try it!")
                     .setPositiveButton("Close", new DialogInterface.OnClickListener() {
@@ -161,7 +172,6 @@ public class create extends AppCompatActivity implements View.OnClickListener{
     {
         ArrayList<String> f = new ArrayList<>();
         fc = new FormulaCreate();
-        formula = new Formula();
         for(int i=0; i<fc.size();i++)
         {
             f.add(fc.getFormula().get(i).toString());

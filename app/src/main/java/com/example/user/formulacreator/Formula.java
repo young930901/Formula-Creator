@@ -8,6 +8,7 @@ import java.util.List;
  * Created by user on 4/12/2016.
  */
 public class Formula implements Serializable{
+    int count=0;
     public ArrayList<Token> exprList;
 
     public Formula()
@@ -20,6 +21,7 @@ public class Formula implements Serializable{
         for(int i =0; i<that.size();i++)
         {
             exprList.add(that.get(i));
+            count++;
         }
     }
     public int validCondition()
@@ -50,12 +52,14 @@ public class Formula implements Serializable{
     public void add(Token expr)
     {
         exprList.add(expr);
+        count++;
     }
     public void append(Formula f)
     {
         for(int i=0; i<f.getForm().size();i++)
         {
             this.exprList.add(f.getForm().get(i));
+            count++;
         }
 
     }
@@ -65,6 +69,7 @@ public class Formula implements Serializable{
     public void delete()
     {
         exprList.remove(exprList.size()-1);
+        count--;
     }
     public ArrayList<Token> getForm()
     {
